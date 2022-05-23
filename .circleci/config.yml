@@ -18,9 +18,27 @@ jobs:
           name: "Say hello"
           command: "echo Hello, World!"
 
+  configure_infrastructure: 
+    docker: 
+      - image: python:3.7-alpine3.11
+    steps: 
+      - checkout
+      - add_ssh_keys: 
+        fingerprints: ["87:ad:56:da:6a:94:b9:cb:39:58:25:dc:20:ab:d8:43"]
+      - run: 
+          name: Install dependencies
+          command: |
+            # Install dependencies needed for your playbook
+            apk add --update ansible
+      - run: 
+          name: Configure server
+          command: |
+            ansible-playbook -i inventory.txt main.yml
+
+
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
   say-hello-workflow:
     jobs:
-      - say-hello
+      - configure_infrastructure
